@@ -23,6 +23,7 @@
     --text-dim: #888;
     --text-faint: #444;
     --red: #c0392b;
+    --green: #2ecc71;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -43,12 +44,29 @@
     top: 0;
     z-index: 100;
   }
+  .topbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .topbar-title {
     font-family: 'Playfair Display', serif;
     font-size: 22px;
     color: var(--gold);
     letter-spacing: 0.02em;
   }
+  .sync-status {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+  }
+  .sync-status.synced  { color: var(--green); border-color: rgba(46,204,113,0.3); background: rgba(46,204,113,0.07); }
+  .sync-status.syncing { color: var(--gold);  border-color: var(--gold-border);   background: var(--gold-dim); }
+  .sync-status.error   { color: var(--red);   border-color: rgba(192,57,43,0.3);  background: rgba(192,57,43,0.07); }
   .topbar-date {
     font-size: 11px;
     color: var(--text-dim);
@@ -128,7 +146,6 @@
   }
 
   .slot-list { padding: 8px 0; }
-
   .slot-row {
     display: flex;
     align-items: center;
@@ -150,7 +167,6 @@
     white-space: nowrap;
     flex: 2;
   }
-
   .slot-name {
     flex: 2;
     background: var(--surface2);
@@ -167,8 +183,7 @@
   .dollar-wrap { position: relative; flex: 1.2; }
   .dollar-sign {
     position: absolute;
-    left: 9px;
-    top: 50%;
+    left: 9px; top: 50%;
     transform: translateY(-50%);
     color: var(--gold);
     font-size: 13px;
@@ -192,172 +207,105 @@
   .slot-amount::-webkit-outer-spin-button { -webkit-appearance: none; }
 
   .remove-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-faint);
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0 2px;
-    line-height: 1;
-    font-family: inherit;
-    width: 22px;
-    flex-shrink: 0;
+    background: transparent; border: none;
+    color: var(--text-faint); font-size: 18px;
+    cursor: pointer; padding: 0 2px;
+    line-height: 1; font-family: inherit;
+    width: 22px; flex-shrink: 0;
   }
   .remove-btn:active { color: var(--red); }
   .slot-spacer { width: 22px; flex-shrink: 0; }
 
-  .add-server-row {
-    padding: 10px 16px;
-    border-top: 1px solid var(--border);
-  }
+  .add-server-row { padding: 10px 16px; border-top: 1px solid var(--border); }
   .add-server-btn {
     background: transparent;
     border: 1px dashed var(--border);
     color: var(--text-dim);
-    width: 100%;
-    padding: 8px;
+    width: 100%; padding: 8px;
     border-radius: 4px;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-    cursor: pointer;
-    transition: all 0.2s;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    font-family: 'DM Mono', monospace; cursor: pointer; transition: all 0.2s;
   }
   .add-server-btn:active { border-color: var(--gold); color: var(--gold); }
 
   .save-row { margin-top: 8px; }
   .save-btn {
-    width: 100%;
-    background: var(--gold);
-    border: none;
-    border-radius: 6px;
-    color: #0a0a0a;
+    width: 100%; background: var(--gold); border: none;
+    border-radius: 6px; color: #0a0a0a;
     font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 14px;
-    cursor: pointer;
-    transition: opacity 0.2s;
+    font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;
+    padding: 14px; cursor: pointer; transition: opacity 0.2s;
   }
   .save-btn:active { opacity: 0.8; }
+  .save-btn:disabled { opacity: 0.5; cursor: default; }
 
   .section-title {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 28px 0 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--text-dim); margin: 28px 0 12px;
+    display: flex; align-items: center; gap: 10px;
   }
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   .history-empty {
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 12px;
-    padding: 24px;
-    letter-spacing: 0.1em;
+    text-align: center; color: var(--text-faint);
+    font-size: 12px; padding: 24px; letter-spacing: 0.1em;
   }
 
   .history-entry {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 12px;
-    overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 12px; overflow: hidden;
   }
   .history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 14px;
-    background: var(--surface2);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; background: var(--surface2);
     border-bottom: 1px solid var(--border);
   }
-  .history-date-label {
-    font-size: 12px;
-    color: var(--text);
-    letter-spacing: 0.1em;
-  }
+  .history-date-label { font-size: 12px; color: var(--text); letter-spacing: 0.1em; }
   .history-shift-badge {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 3px;
-    margin-left: 8px;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px; margin-left: 8px;
   }
   .badge-am { background: rgba(200,169,110,0.15); color: var(--gold); }
   .badge-pm { background: rgba(100,120,200,0.15); color: #8899dd; }
 
   .history-totals { display: flex; }
   .history-cat {
-    flex: 1;
-    padding: 10px 14px;
+    flex: 1; padding: 10px 14px;
     border-right: 1px solid var(--border);
   }
   .history-cat:last-child { border-right: none; }
   .history-cat-name {
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 4px;
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 4px;
   }
   .history-cat-amount {
-    font-size: 15px;
-    color: var(--gold);
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
+    font-size: 15px; color: var(--gold);
+    font-family: 'Playfair Display', serif; font-style: italic;
   }
 
   .history-delete {
-    display: flex;
-    justify-content: flex-end;
-    padding: 8px 14px;
-    border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end;
+    padding: 8px 14px; border-top: 1px solid var(--border);
   }
   .delete-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-faint);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-    padding: 5px 12px;
-    border-radius: 3px;
-    cursor: pointer;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-faint); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; font-family: 'DM Mono', monospace;
+    padding: 5px 12px; border-radius: 3px; cursor: pointer;
   }
   .delete-btn:active { border-color: var(--red); color: var(--red); }
 
   #toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
+    position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(80px);
+    color: #0a0a0a; font-family: 'DM Mono', monospace;
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 12px 24px; border-radius: 6px;
+    transition: transform 0.3s ease; z-index: 999; white-space: nowrap;
     background: var(--gold);
-    color: #0a0a0a;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 12px 24px;
-    border-radius: 6px;
-    transition: transform 0.3s ease;
-    z-index: 999;
-    white-space: nowrap;
   }
-  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.show  { transform: translateX(-50%) translateY(0); }
+  #toast.error { background: var(--red); color: #fff; }
 
   input[type=number] { -moz-appearance: textfield; }
 </style>
@@ -365,7 +313,10 @@
 <body>
 
 <div class="topbar">
-  <div class="topbar-title">Tip Out Tracker</div>
+  <div class="topbar-row">
+    <div class="topbar-title">Tip Out Tracker</div>
+    <div class="sync-status" id="syncStatus">● Connecting…</div>
+  </div>
   <div class="topbar-date" id="todayLabel"></div>
 </div>
 
@@ -415,7 +366,7 @@
   </div>
 
   <div class="save-row">
-    <button class="save-btn" onclick="saveShift()">💾 Save Shift</button>
+    <button class="save-btn" id="saveBtn" onclick="saveShift()">☁ Save Shift</button>
   </div>
 
   <div class="section-title">Saved History</div>
@@ -423,127 +374,61 @@
 
 </div>
 
-<div id="toast">Shift Saved!</div>
+<div id="toast"></div>
 
-<script>
-// ─────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────
+<script type="module">
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, deleteDoc,
+         collection, onSnapshot, query,
+         orderBy }                                from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ─── Firebase config ───────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyBo20eNwKSMIVM72A9fCJ21ee1JyQUCurc",
+  authDomain:        "tip-out-tracker.firebaseapp.com",
+  projectId:         "tip-out-tracker",
+  storageBucket:     "tip-out-tracker.firebasestorage.app",
+  messagingSenderId: "252492531570",
+  appId:             "1:252492531570:web:34312202073824035c3feb"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db          = getFirestore(firebaseApp);
+const COLLECTION  = "shifts";
+
+// ─── State ─────────────────────────────────────────────────────
 let currentShift = 'AM';
 let currentDate  = '';
-let savedShifts  = {};   // key: "YYYY-MM-DD::AM" or "YYYY-MM-DD::PM"
+let savedShifts  = {};   // key: "YYYY-MM-DD::AM" etc.
 let workingData  = { bar: [], runner: [], busser: [] };
 let _uid = 0;
 function uid() { return 'u' + Date.now() + '_' + (++_uid); }
+function storageKey() { return currentDate + '::' + currentShift; }
 
-// ─────────────────────────────────────────
-// STORAGE KEY  — uses :: so split('::') is safe
-// ─────────────────────────────────────────
-function storageKey(date, shift) {
-  return 'tiptrack::' + (date || currentDate) + '::' + (shift || currentShift);
+// ─── Sync status UI ────────────────────────────────────────────
+function setSyncStatus(state, label) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status ' + state;
+  el.textContent = label;
 }
 
-// ─────────────────────────────────────────
-// IndexedDB wrapper (primary storage)
-// ─────────────────────────────────────────
-let db = null;
-const DB_NAME = 'TipOutDB';
-const STORE   = 'shifts';
-
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE, { keyPath: 'key' });
-    req.onsuccess = e => { db = e.target.result; resolve(db); };
-    req.onerror   = () => reject(req.error);
-  });
-}
-
-function idbSet(key, value) {
-  return new Promise((resolve) => {
-    if (!db) { resolve(); return; }
-    const tx = db.transaction(STORE, 'readwrite');
-    tx.objectStore(STORE).put({ key, value: JSON.stringify(value) });
-    tx.oncomplete = resolve;
-    tx.onerror    = resolve; // fail silently
-  });
-}
-
-function idbGetAll() {
-  return new Promise((resolve) => {
-    if (!db) { resolve({}); return; }
-    const results = {};
-    const tx  = db.transaction(STORE, 'readonly');
-    const req = tx.objectStore(STORE).openCursor();
-    req.onsuccess = e => {
-      const cursor = e.target.result;
-      if (cursor) {
-        try { results[cursor.value.key] = JSON.parse(cursor.value.value); } catch(err){}
-        cursor.continue();
-      } else {
-        resolve(results);
-      }
-    };
-    req.onerror = () => resolve({});
-  });
-}
-
-function idbDelete(key) {
-  return new Promise((resolve) => {
-    if (!db) { resolve(); return; }
-    const tx = db.transaction(STORE, 'readwrite');
-    tx.objectStore(STORE).delete(key);
-    tx.oncomplete = resolve;
-    tx.onerror    = resolve;
-  });
-}
-
-// localStorage mirror (fallback)
-function lsSet(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
-}
-function lsGetAll() {
-  const out = {};
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('tiptrack::')) {
-        try { out[k] = JSON.parse(localStorage.getItem(k)); } catch(e) {}
-      }
-    }
-  } catch(e) {}
-  return out;
-}
-function lsDelete(key) {
-  try { localStorage.removeItem(key); } catch(e) {}
-}
-
-// ─────────────────────────────────────────
-// DEFAULT DATA
-// ─────────────────────────────────────────
+// ─── Default data ──────────────────────────────────────────────
 function defaultData() {
   const isPM = currentShift === 'PM';
   return {
-    bar: [
-      { id: uid(), name: '', amount: '', server: true }
-    ],
+    bar:    [{ id: uid(), name: '', amount: '', server: true }],
     runner: [
       { id: uid(), name: 'Host',          amount: '', locked: true },
       { id: uid(), name: 'Bar',           amount: '', locked: true },
       { id: uid(), name: '',              amount: '', server: true },
       ...(isPM ? [{ id: uid(), name: 'Online Takeout', amount: '', locked: true, pmOnly: true }] : [])
     ],
-    busser: [
-      { id: uid(), name: '', amount: '', server: true }
-    ]
+    busser: [{ id: uid(), name: '', amount: '', server: true }]
   };
 }
 
-// ─────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────
-async function init() {
-  // Set today's date
+// ─── Init ──────────────────────────────────────────────────────
+function init() {
   const today = new Date();
   const yyyy  = today.getFullYear();
   const mm    = String(today.getMonth() + 1).padStart(2, '0');
@@ -551,44 +436,48 @@ async function init() {
   currentDate = `${yyyy}-${mm}-${dd}`;
   document.getElementById('datePicker').value = currentDate;
   document.getElementById('todayLabel').textContent =
-    today.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase();
+    today.toLocaleDateString('en-US',
+      { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase();
 
-  // Open IndexedDB
-  try { await openDB(); } catch(e) { console.warn('IndexedDB unavailable, using localStorage only'); }
-
-  // Load all saved shifts (IDB first, then merge localStorage)
-  const idbData = await idbGetAll();
-  const lsData  = lsGetAll();
-  savedShifts   = Object.assign({}, lsData, idbData); // IDB wins on conflict
-
-  loadWorkingData();
-  renderAll();
-  renderHistory();
+  // Real-time listener — fires on load and on any change from any device
+  setSyncStatus('syncing', '● Syncing…');
+  const q = query(collection(db, COLLECTION));
+  onSnapshot(q,
+    (snapshot) => {
+      savedShifts = {};
+      snapshot.forEach(docSnap => {
+        savedShifts[docSnap.id] = docSnap.data();
+      });
+      setSyncStatus('synced', '● Synced');
+      loadWorkingData();
+      renderAll();
+      renderHistory();
+    },
+    (err) => {
+      console.error('Firestore error:', err);
+      setSyncStatus('error', '● Offline');
+      showToast('Connection error — check internet', true);
+    }
+  );
 }
 
-// ─────────────────────────────────────────
-// WORKING DATA
-// ─────────────────────────────────────────
+// ─── Working data ──────────────────────────────────────────────
 function loadWorkingData() {
   const key = storageKey();
-  if (savedShifts[key]) {
-    workingData = JSON.parse(JSON.stringify(savedShifts[key]));
-  } else {
-    workingData = defaultData();
-  }
+  workingData = savedShifts[key]
+    ? JSON.parse(JSON.stringify(savedShifts[key]))
+    : defaultData();
 }
 
-// ─────────────────────────────────────────
-// SWITCH SHIFT / DATE
-// ─────────────────────────────────────────
-function switchShift(shift) {
+// ─── Shift / date switch ───────────────────────────────────────
+window.switchShift = function(shift) {
   currentShift = shift;
   document.querySelectorAll('.shift-tab').forEach(t =>
     t.classList.toggle('active', t.dataset.shift === shift)
   );
   loadWorkingData();
   renderAll();
-}
+};
 
 document.getElementById('datePicker').addEventListener('change', function() {
   currentDate = this.value;
@@ -597,12 +486,8 @@ document.getElementById('datePicker').addEventListener('change', function() {
   renderHistory();
 });
 
-// ─────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────
-function renderAll() {
-  ['bar', 'runner', 'busser'].forEach(renderCategory);
-}
+// ─── Render ────────────────────────────────────────────────────
+function renderAll() { ['bar','runner','busser'].forEach(renderCategory); }
 
 function renderCategory(cat) {
   const list = document.getElementById(`${cat}-slots`);
@@ -638,10 +523,8 @@ function makeSlotRow(cat, slot) {
   const amtInput = document.createElement('input');
   amtInput.className = 'slot-amount';
   amtInput.type = 'number';
-  amtInput.min = '0';
-  amtInput.step = '0.01';
-  amtInput.placeholder = '0.00';
-  amtInput.inputMode = 'decimal';
+  amtInput.min = '0'; amtInput.step = '0.01';
+  amtInput.placeholder = '0.00'; amtInput.inputMode = 'decimal';
   amtInput.value = slot.amount || '';
   amtInput.addEventListener('input', e => { slot.amount = e.target.value; updateTotal(cat); });
   dWrap.appendChild(dSign);
@@ -662,11 +545,10 @@ function makeSlotRow(cat, slot) {
     spacer.className = 'slot-spacer';
     row.appendChild(spacer);
   }
-
   return row;
 }
 
-function addServer(cat) {
+window.addServer = function(cat) {
   const newSlot = { id: uid(), name: '', amount: '', server: true };
   if (cat === 'runner' && currentShift === 'PM') {
     const pmIdx = workingData.runner.findIndex(s => s.pmOnly);
@@ -677,53 +559,53 @@ function addServer(cat) {
     workingData[cat].push(newSlot);
   }
   renderCategory(cat);
-}
+};
 
 function updateTotal(cat) {
-  const total = workingData[cat].reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+  const total = workingData[cat].reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
   document.getElementById(`${cat}-total`).textContent = fmt(total);
 }
 
-// ─────────────────────────────────────────
-// SAVE
-// ─────────────────────────────────────────
-async function saveShift() {
-  const key  = storageKey();
-  const copy = JSON.parse(JSON.stringify(workingData));
-  savedShifts[key] = copy;
+// ─── Save ──────────────────────────────────────────────────────
+window.saveShift = async function() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  setSyncStatus('syncing', '● Saving…');
+  try {
+    const key  = storageKey();
+    const copy = JSON.parse(JSON.stringify(workingData));
+    await setDoc(doc(db, COLLECTION, key), copy);
+    showToast('Shift Saved & Synced ☁');
+  } catch(e) {
+    console.error(e);
+    setSyncStatus('error', '● Save failed');
+    showToast('Save failed — check internet', true);
+  } finally {
+    btn.disabled = false;
+  }
+};
 
-  // Write to both storages
-  await idbSet(key, copy);
-  lsSet(key, copy);
-
-  showToast('Shift Saved!');
-  renderHistory();
-}
-
-// ─────────────────────────────────────────
-// DELETE
-// ─────────────────────────────────────────
+// ─── Delete ────────────────────────────────────────────────────
 async function deleteShift(key) {
   if (!confirm('Delete this saved shift?')) return;
-  delete savedShifts[key];
-  await idbDelete(key);
-  lsDelete(key);
-  renderHistory();
+  try {
+    await deleteDoc(doc(db, COLLECTION, key));
+  } catch(e) {
+    showToast('Delete failed', true);
+  }
 }
 
-// ─────────────────────────────────────────
-// HISTORY
-// ─────────────────────────────────────────
+// ─── History ───────────────────────────────────────────────────
 function renderHistory() {
   const container = document.getElementById('history-list');
   container.innerHTML = '';
 
   const entries = Object.entries(savedShifts)
-    .filter(([k]) => k.startsWith('tiptrack::'))
     .map(([k, v]) => {
-      const parts = k.split('::'); // ['tiptrack', 'YYYY-MM-DD', 'AM/PM']
-      return { date: parts[1], shift: parts[2], data: v, key: k };
+      const parts = k.split('::');
+      return { date: parts[0], shift: parts[1], data: v, key: k };
     })
+    .filter(e => e.date && e.shift)
     .sort((a, b) => {
       if (b.date !== a.date) return b.date.localeCompare(a.date);
       return a.shift === 'AM' ? -1 : 1;
@@ -735,9 +617,9 @@ function renderHistory() {
   }
 
   entries.forEach(entry => {
-    const barTotal    = entry.data.bar.reduce((s, e)    => s + (parseFloat(e.amount) || 0), 0);
-    const runnerTotal = entry.data.runner.reduce((s, e)  => s + (parseFloat(e.amount) || 0), 0);
-    const busserTotal = entry.data.busser.reduce((s, e)  => s + (parseFloat(e.amount) || 0), 0);
+    const barTotal    = (entry.data.bar    || []).reduce((s,e) => s+(parseFloat(e.amount)||0), 0);
+    const runnerTotal = (entry.data.runner || []).reduce((s,e) => s+(parseFloat(e.amount)||0), 0);
+    const busserTotal = (entry.data.busser || []).reduce((s,e) => s+(parseFloat(e.amount)||0), 0);
 
     const dateObj   = new Date(entry.date + 'T12:00:00');
     const dateLabel = dateObj.toLocaleDateString('en-US',
@@ -748,7 +630,7 @@ function renderHistory() {
     el.innerHTML = `
       <div class="history-header">
         <span class="history-date-label">${dateLabel}
-          <span class="history-shift-badge ${entry.shift === 'AM' ? 'badge-am' : 'badge-pm'}">${entry.shift}</span>
+          <span class="history-shift-badge ${entry.shift==='AM'?'badge-am':'badge-pm'}">${entry.shift}</span>
         </span>
       </div>
       <div class="history-totals">
@@ -774,23 +656,19 @@ function renderHistory() {
   });
 }
 
-// ─────────────────────────────────────────
-// UTILS
-// ─────────────────────────────────────────
+// ─── Utils ─────────────────────────────────────────────────────
 function fmt(val) {
   return new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format(val);
 }
 
-function showToast(msg) {
+function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  t.className = isError ? 'error show' : 'show';
+  setTimeout(() => { t.className = ''; }, 2800);
 }
 
-// ─────────────────────────────────────────
-// GO
-// ─────────────────────────────────────────
+// ─── Go ────────────────────────────────────────────────────────
 init();
 </script>
 </body>
