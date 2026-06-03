@@ -23,7 +23,6 @@
     --text-dim: #888;
     --text-faint: #444;
     --red: #c0392b;
-    --green: #27ae60;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -36,7 +35,6 @@
     padding-bottom: 80px;
   }
 
-  /* ── TOP BAR ── */
   .topbar {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -59,7 +57,6 @@
     text-transform: uppercase;
   }
 
-  /* ── DATE SELECTOR ── */
   .date-bar {
     display: flex;
     align-items: center;
@@ -82,7 +79,6 @@
   }
   #datePicker:focus { border-color: var(--gold); }
 
-  /* ── SHIFT TABS ── */
   .shift-tabs {
     display: flex;
     border-bottom: 1px solid var(--border);
@@ -100,15 +96,10 @@
     border-bottom: 2px solid transparent;
     transition: all 0.2s;
   }
-  .shift-tab.active {
-    color: var(--gold);
-    border-bottom-color: var(--gold);
-  }
+  .shift-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-  /* ── MAIN CONTENT ── */
   .content { padding: 20px; max-width: 600px; margin: 0 auto; }
 
-  /* ── CATEGORY CARD ── */
   .category {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -136,7 +127,6 @@
     font-family: 'Playfair Display', serif;
   }
 
-  /* ── SLOT ROWS ── */
   .slot-list { padding: 8px 0; }
 
   .slot-row {
@@ -158,6 +148,7 @@
     border-radius: 3px;
     padding: 2px 5px;
     white-space: nowrap;
+    flex: 2;
   }
 
   .slot-name {
@@ -172,12 +163,6 @@
     outline: none;
   }
   .slot-name:focus { border-color: var(--gold); }
-  .slot-name:disabled {
-    color: var(--text-dim);
-    cursor: default;
-    background: var(--bg);
-    border-color: var(--border);
-  }
 
   .dollar-wrap { position: relative; flex: 1.2; }
   .dollar-sign {
@@ -215,10 +200,12 @@
     padding: 0 2px;
     line-height: 1;
     font-family: inherit;
+    width: 22px;
+    flex-shrink: 0;
   }
   .remove-btn:active { color: var(--red); }
+  .slot-spacer { width: 22px; flex-shrink: 0; }
 
-  /* ── ADD SERVER BTN ── */
   .add-server-row {
     padding: 10px 16px;
     border-top: 1px solid var(--border);
@@ -239,7 +226,6 @@
   }
   .add-server-btn:active { border-color: var(--gold); color: var(--gold); }
 
-  /* ── SAVE BUTTON ── */
   .save-row { margin-top: 8px; }
   .save-btn {
     width: 100%;
@@ -249,7 +235,6 @@
     color: #0a0a0a;
     font-family: 'DM Mono', monospace;
     font-size: 12px;
-    font-weight: 400;
     letter-spacing: 0.25em;
     text-transform: uppercase;
     padding: 14px;
@@ -258,7 +243,6 @@
   }
   .save-btn:active { opacity: 0.8; }
 
-  /* ── HISTORY ── */
   .section-title {
     font-size: 10px;
     letter-spacing: 0.3em;
@@ -298,7 +282,6 @@
     padding: 10px 14px;
     background: var(--surface2);
     border-bottom: 1px solid var(--border);
-    cursor: pointer;
   }
   .history-date-label {
     font-size: 12px;
@@ -316,10 +299,7 @@
   .badge-am { background: rgba(200,169,110,0.15); color: var(--gold); }
   .badge-pm { background: rgba(100,120,200,0.15); color: #8899dd; }
 
-  .history-totals {
-    display: flex;
-    gap: 0;
-  }
+  .history-totals { display: flex; }
   .history-cat {
     flex: 1;
     padding: 10px 14px;
@@ -360,7 +340,6 @@
   }
   .delete-btn:active { border-color: var(--red); color: var(--red); }
 
-  /* ── TOAST ── */
   #toast {
     position: fixed;
     bottom: 30px;
@@ -402,8 +381,7 @@
 
 <div class="content">
 
-  <!-- BAR TIP OUT -->
-  <div class="category" id="cat-bar">
+  <div class="category">
     <div class="category-header">
       <span class="category-title">Bar Tip Out</span>
       <span class="category-total" id="bar-total">$0.00</span>
@@ -414,8 +392,7 @@
     </div>
   </div>
 
-  <!-- FOOD RUNNERS TIP OUT -->
-  <div class="category" id="cat-runner">
+  <div class="category">
     <div class="category-header">
       <span class="category-title">Food Runners Tip Out</span>
       <span class="category-total" id="runner-total">$0.00</span>
@@ -426,8 +403,7 @@
     </div>
   </div>
 
-  <!-- BUSSER TIP OUT -->
-  <div class="category" id="cat-busser">
+  <div class="category">
     <div class="category-header">
       <span class="category-title">Busser Tip Out</span>
       <span class="category-total" id="busser-total">$0.00</span>
@@ -439,7 +415,7 @@
   </div>
 
   <div class="save-row">
-    <button class="save-btn" onclick="saveShift()">Save Shift</button>
+    <button class="save-btn" onclick="saveShift()">💾 Save Shift</button>
   </div>
 
   <div class="section-title">Saved History</div>
@@ -450,55 +426,149 @@
 <div id="toast">Shift Saved!</div>
 
 <script>
-// ── STATE ──
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
 let currentShift = 'AM';
-let currentDate = '';
+let currentDate  = '';
+let savedShifts  = {};   // key: "YYYY-MM-DD::AM" or "YYYY-MM-DD::PM"
+let workingData  = { bar: [], runner: [], busser: [] };
+let _uid = 0;
+function uid() { return 'u' + Date.now() + '_' + (++_uid); }
 
-// In-memory store: key = "YYYY-MM-DD|AM" or "YYYY-MM-DD|PM"
-// value = { bar: [{name,amount},...], runner: [...], busser: [...] }
-let savedShifts = {};
+// ─────────────────────────────────────────
+// STORAGE KEY  — uses :: so split('::') is safe
+// ─────────────────────────────────────────
+function storageKey(date, shift) {
+  return 'tiptrack::' + (date || currentDate) + '::' + (shift || currentShift);
+}
 
-// Current working data
-let workingData = {
-  bar: [],
-  runner: [],
-  busser: []
-};
+// ─────────────────────────────────────────
+// IndexedDB wrapper (primary storage)
+// ─────────────────────────────────────────
+let db = null;
+const DB_NAME = 'TipOutDB';
+const STORE   = 'shifts';
 
-// ── INIT ──
-function init() {
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE, { keyPath: 'key' });
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = () => reject(req.error);
+  });
+}
+
+function idbSet(key, value) {
+  return new Promise((resolve) => {
+    if (!db) { resolve(); return; }
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put({ key, value: JSON.stringify(value) });
+    tx.oncomplete = resolve;
+    tx.onerror    = resolve; // fail silently
+  });
+}
+
+function idbGetAll() {
+  return new Promise((resolve) => {
+    if (!db) { resolve({}); return; }
+    const results = {};
+    const tx  = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).openCursor();
+    req.onsuccess = e => {
+      const cursor = e.target.result;
+      if (cursor) {
+        try { results[cursor.value.key] = JSON.parse(cursor.value.value); } catch(err){}
+        cursor.continue();
+      } else {
+        resolve(results);
+      }
+    };
+    req.onerror = () => resolve({});
+  });
+}
+
+function idbDelete(key) {
+  return new Promise((resolve) => {
+    if (!db) { resolve(); return; }
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).delete(key);
+    tx.oncomplete = resolve;
+    tx.onerror    = resolve;
+  });
+}
+
+// localStorage mirror (fallback)
+function lsSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+function lsGetAll() {
+  const out = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('tiptrack::')) {
+        try { out[k] = JSON.parse(localStorage.getItem(k)); } catch(e) {}
+      }
+    }
+  } catch(e) {}
+  return out;
+}
+function lsDelete(key) {
+  try { localStorage.removeItem(key); } catch(e) {}
+}
+
+// ─────────────────────────────────────────
+// DEFAULT DATA
+// ─────────────────────────────────────────
+function defaultData() {
+  const isPM = currentShift === 'PM';
+  return {
+    bar: [
+      { id: uid(), name: '', amount: '', server: true }
+    ],
+    runner: [
+      { id: uid(), name: 'Host',          amount: '', locked: true },
+      { id: uid(), name: 'Bar',           amount: '', locked: true },
+      { id: uid(), name: '',              amount: '', server: true },
+      ...(isPM ? [{ id: uid(), name: 'Online Takeout', amount: '', locked: true, pmOnly: true }] : [])
+    ],
+    busser: [
+      { id: uid(), name: '', amount: '', server: true }
+    ]
+  };
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+async function init() {
+  // Set today's date
   const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth()+1).padStart(2,'0');
-  const dd = String(today.getDate()).padStart(2,'0');
+  const yyyy  = today.getFullYear();
+  const mm    = String(today.getMonth() + 1).padStart(2, '0');
+  const dd    = String(today.getDate()).padStart(2, '0');
   currentDate = `${yyyy}-${mm}-${dd}`;
   document.getElementById('datePicker').value = currentDate;
+  document.getElementById('todayLabel').textContent =
+    today.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase();
 
-  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-  document.getElementById('todayLabel').textContent = today.toLocaleDateString('en-US', opts).toUpperCase();
+  // Open IndexedDB
+  try { await openDB(); } catch(e) { console.warn('IndexedDB unavailable, using localStorage only'); }
 
-  loadFromStorage();
+  // Load all saved shifts (IDB first, then merge localStorage)
+  const idbData = await idbGetAll();
+  const lsData  = lsGetAll();
+  savedShifts   = Object.assign({}, lsData, idbData); // IDB wins on conflict
+
   loadWorkingData();
   renderAll();
   renderHistory();
 }
 
-// ── STORAGE ──
-function storageKey() { return `tiptrack_${currentDate}_${currentShift}`; }
-
-function saveToStorage() {
-  try { localStorage.setItem(storageKey(), JSON.stringify(workingData)); } catch(e) {}
-}
-
-function loadFromStorage() {
-  try {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('tiptrack_'));
-    keys.forEach(k => {
-      try { savedShifts[k] = JSON.parse(localStorage.getItem(k)); } catch(e){}
-    });
-  } catch(e) {}
-}
-
+// ─────────────────────────────────────────
+// WORKING DATA
+// ─────────────────────────────────────────
 function loadWorkingData() {
   const key = storageKey();
   if (savedShifts[key]) {
@@ -508,33 +578,14 @@ function loadWorkingData() {
   }
 }
 
-function defaultData() {
-  const isPM = currentShift === 'PM';
-  return {
-    bar: [
-      { id: uid(), name: '', amount: '', server: true }
-    ],
-    runner: [
-      { id: uid(), name: 'Host', amount: '', locked: true },
-      { id: uid(), name: 'Bar', amount: '', locked: true },
-      { id: uid(), name: '', amount: '', server: true },
-      ...(isPM ? [{ id: uid(), name: 'Online Takeout', amount: '', locked: true, pmOnly: true }] : [])
-    ],
-    busser: [
-      { id: uid(), name: '', amount: '', server: true }
-    ]
-  };
-}
-
-let _uidCounter = 0;
-function uid() { return 'id_' + Date.now() + '_' + (++_uidCounter); }
-
-// ── SWITCH ──
+// ─────────────────────────────────────────
+// SWITCH SHIFT / DATE
+// ─────────────────────────────────────────
 function switchShift(shift) {
   currentShift = shift;
-  document.querySelectorAll('.shift-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.shift === shift);
-  });
+  document.querySelectorAll('.shift-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.shift === shift)
+  );
   loadWorkingData();
   renderAll();
 }
@@ -546,35 +597,30 @@ document.getElementById('datePicker').addEventListener('change', function() {
   renderHistory();
 });
 
-// ── RENDER ──
+// ─────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────
 function renderAll() {
-  renderCategory('bar');
-  renderCategory('runner');
-  renderCategory('busser');
+  ['bar', 'runner', 'busser'].forEach(renderCategory);
 }
 
 function renderCategory(cat) {
   const list = document.getElementById(`${cat}-slots`);
   list.innerHTML = '';
-  workingData[cat].forEach(slot => {
-    list.appendChild(makeSlotRow(cat, slot));
-  });
+  workingData[cat].forEach(slot => list.appendChild(makeSlotRow(cat, slot)));
   updateTotal(cat);
 }
 
 function makeSlotRow(cat, slot) {
   const row = document.createElement('div');
   row.className = 'slot-row';
-  row.dataset.id = slot.id;
 
   if (slot.locked) {
-    // Locked name badge
     const badge = document.createElement('span');
     badge.className = 'slot-locked-badge';
     badge.textContent = slot.name;
     row.appendChild(badge);
   } else {
-    // Editable name
     const nameInput = document.createElement('input');
     nameInput.className = 'slot-name';
     nameInput.type = 'text';
@@ -584,7 +630,6 @@ function makeSlotRow(cat, slot) {
     row.appendChild(nameInput);
   }
 
-  // Amount input
   const dWrap = document.createElement('div');
   dWrap.className = 'dollar-wrap';
   const dSign = document.createElement('span');
@@ -598,15 +643,11 @@ function makeSlotRow(cat, slot) {
   amtInput.placeholder = '0.00';
   amtInput.inputMode = 'decimal';
   amtInput.value = slot.amount || '';
-  amtInput.addEventListener('input', e => {
-    slot.amount = e.target.value;
-    updateTotal(cat);
-  });
+  amtInput.addEventListener('input', e => { slot.amount = e.target.value; updateTotal(cat); });
   dWrap.appendChild(dSign);
   dWrap.appendChild(amtInput);
   row.appendChild(dWrap);
 
-  // Remove button (only for non-locked server rows, not pmOnly)
   if (!slot.locked) {
     const rmBtn = document.createElement('button');
     rmBtn.className = 'remove-btn';
@@ -617,9 +658,8 @@ function makeSlotRow(cat, slot) {
     });
     row.appendChild(rmBtn);
   } else {
-    // Spacer to align
     const spacer = document.createElement('span');
-    spacer.style.width = '22px';
+    spacer.className = 'slot-spacer';
     row.appendChild(spacer);
   }
 
@@ -627,18 +667,14 @@ function makeSlotRow(cat, slot) {
 }
 
 function addServer(cat) {
-  const isPM = currentShift === 'PM';
-  // For runner, add before Online Takeout if PM
-  if (cat === 'runner' && isPM) {
+  const newSlot = { id: uid(), name: '', amount: '', server: true };
+  if (cat === 'runner' && currentShift === 'PM') {
     const pmIdx = workingData.runner.findIndex(s => s.pmOnly);
-    const newSlot = { id: uid(), name: '', amount: '', server: true };
-    if (pmIdx > -1) {
-      workingData.runner.splice(pmIdx, 0, newSlot);
-    } else {
-      workingData.runner.push(newSlot);
-    }
+    pmIdx > -1
+      ? workingData.runner.splice(pmIdx, 0, newSlot)
+      : workingData.runner.push(newSlot);
   } else {
-    workingData[cat].push({ id: uid(), name: '', amount: '', server: true });
+    workingData[cat].push(newSlot);
   }
   renderCategory(cat);
 }
@@ -648,27 +684,47 @@ function updateTotal(cat) {
   document.getElementById(`${cat}-total`).textContent = fmt(total);
 }
 
-// ── SAVE ──
-function saveShift() {
-  const key = storageKey();
-  savedShifts[key] = JSON.parse(JSON.stringify(workingData));
-  try { localStorage.setItem(key, JSON.stringify(workingData)); } catch(e){}
+// ─────────────────────────────────────────
+// SAVE
+// ─────────────────────────────────────────
+async function saveShift() {
+  const key  = storageKey();
+  const copy = JSON.parse(JSON.stringify(workingData));
+  savedShifts[key] = copy;
+
+  // Write to both storages
+  await idbSet(key, copy);
+  lsSet(key, copy);
+
   showToast('Shift Saved!');
   renderHistory();
 }
 
-// ── HISTORY ──
+// ─────────────────────────────────────────
+// DELETE
+// ─────────────────────────────────────────
+async function deleteShift(key) {
+  if (!confirm('Delete this saved shift?')) return;
+  delete savedShifts[key];
+  await idbDelete(key);
+  lsDelete(key);
+  renderHistory();
+}
+
+// ─────────────────────────────────────────
+// HISTORY
+// ─────────────────────────────────────────
 function renderHistory() {
   const container = document.getElementById('history-list');
   container.innerHTML = '';
 
   const entries = Object.entries(savedShifts)
-    .filter(([k]) => k.startsWith('tiptrack_'))
+    .filter(([k]) => k.startsWith('tiptrack::'))
     .map(([k, v]) => {
-      const parts = k.replace('tiptrack_','').split('_');
-      return { date: parts[0], shift: parts[1], data: v, key: k };
+      const parts = k.split('::'); // ['tiptrack', 'YYYY-MM-DD', 'AM/PM']
+      return { date: parts[1], shift: parts[2], data: v, key: k };
     })
-    .sort((a,b) => {
+    .sort((a, b) => {
       if (b.date !== a.date) return b.date.localeCompare(a.date);
       return a.shift === 'AM' ? -1 : 1;
     });
@@ -679,20 +735,20 @@ function renderHistory() {
   }
 
   entries.forEach(entry => {
-    const barTotal = entry.data.bar.reduce((s,e) => s+(parseFloat(e.amount)||0),0);
-    const runnerTotal = entry.data.runner.reduce((s,e) => s+(parseFloat(e.amount)||0),0);
-    const busserTotal = entry.data.busser.reduce((s,e) => s+(parseFloat(e.amount)||0),0);
+    const barTotal    = entry.data.bar.reduce((s, e)    => s + (parseFloat(e.amount) || 0), 0);
+    const runnerTotal = entry.data.runner.reduce((s, e)  => s + (parseFloat(e.amount) || 0), 0);
+    const busserTotal = entry.data.busser.reduce((s, e)  => s + (parseFloat(e.amount) || 0), 0);
+
+    const dateObj   = new Date(entry.date + 'T12:00:00');
+    const dateLabel = dateObj.toLocaleDateString('en-US',
+      { weekday:'short', month:'short', day:'numeric', year:'numeric' });
 
     const el = document.createElement('div');
     el.className = 'history-entry';
-
-    const dateObj = new Date(entry.date + 'T12:00:00');
-    const dateLabel = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
-
     el.innerHTML = `
       <div class="history-header">
         <span class="history-date-label">${dateLabel}
-          <span class="history-shift-badge ${entry.shift==='AM'?'badge-am':'badge-pm'}">${entry.shift}</span>
+          <span class="history-shift-badge ${entry.shift === 'AM' ? 'badge-am' : 'badge-pm'}">${entry.shift}</span>
         </span>
       </div>
       <div class="history-totals">
@@ -710,23 +766,17 @@ function renderHistory() {
         </div>
       </div>
       <div class="history-delete">
-        <button class="delete-btn" data-key="${entry.key}">Delete</button>
-      </div>
-    `;
+        <button class="delete-btn">Delete</button>
+      </div>`;
 
-    el.querySelector('.delete-btn').addEventListener('click', function() {
-      if (confirm('Delete this saved shift?')) {
-        delete savedShifts[this.dataset.key];
-        try { localStorage.removeItem(this.dataset.key); } catch(e){}
-        renderHistory();
-      }
-    });
-
+    el.querySelector('.delete-btn').addEventListener('click', () => deleteShift(entry.key));
     container.appendChild(el);
   });
 }
 
-// ── UTILS ──
+// ─────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────
 function fmt(val) {
   return new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format(val);
 }
@@ -738,7 +788,9 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── START ──
+// ─────────────────────────────────────────
+// GO
+// ─────────────────────────────────────────
 init();
 </script>
 </body>
