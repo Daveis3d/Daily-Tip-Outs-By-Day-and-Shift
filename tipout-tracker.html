@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="Tip Tracker"/>
+<meta name="theme-color" content="#0a0a0a"/>
+<title>Tip Out Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400&display=swap');
+
+  :root {
+    --gold: #c8a96e;
+    --gold-dim: rgba(200,169,110,0.15);
+    --gold-border: rgba(200,169,110,0.3);
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --border: #262626;
+    --text: #f0e6d3;
+    --text-dim: #888;
+    --text-faint: #444;
+    --red: #c0392b;
+    --green: #27ae60;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .topbar-date {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── DATE SELECTOR ── */
+  .date-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .date-bar label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); }
+  #datePicker {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 6px 10px;
+    outline: none;
+    flex: 1;
+  }
+  #datePicker:focus { border-color: var(--gold); }
+
+  /* ── SHIFT TABS ── */
+  .shift-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .shift-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .shift-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .content { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+  /* ── CATEGORY CARD ── */
+  .category {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .category-header {
+    background: var(--gold-dim);
+    border-bottom: 1px solid var(--gold-border);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .category-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--gold);
+    font-style: italic;
+  }
+  .category-total {
+    font-size: 18px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* ── SLOT ROWS ── */
+  .slot-list { padding: 8px 0; }
+
+  .slot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .slot-row:last-child { border-bottom: none; }
+
+  .slot-locked-badge {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 5px;
+    white-space: nowrap;
+  }
+
+  .slot-name {
+    flex: 2;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    outline: none;
+  }
+  .slot-name:focus { border-color: var(--gold); }
+  .slot-name:disabled {
+    color: var(--text-dim);
+    cursor: default;
+    background: var(--bg);
+    border-color: var(--border);
+  }
+
+  .dollar-wrap { position: relative; flex: 1.2; }
+  .dollar-sign {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .slot-amount {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 8px 8px 22px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+  }
+  .slot-amount:focus { border-color: var(--gold); }
+  .slot-amount::-webkit-inner-spin-button,
+  .slot-amount::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    font-family: inherit;
+  }
+  .remove-btn:active { color: var(--red); }
+
+  /* ── ADD SERVER BTN ── */
+  .add-server-row {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .add-server-btn {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-dim);
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .add-server-btn:active { border-color: var(--gold); color: var(--gold); }
+
+  /* ── SAVE BUTTON ── */
+  .save-row { margin-top: 8px; }
+  .save-btn {
+    width: 100%;
+    background: var(--gold);
+    border: none;
+    border-radius: 6px;
+    color: #0a0a0a;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .save-btn:active { opacity: 0.8; }
+
+  /* ── HISTORY ── */
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .history-empty {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12px;
+    padding: 24px;
+    letter-spacing: 0.1em;
+  }
+
+  .history-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .history-date-label {
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.1em;
+  }
+  .history-shift-badge {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-left: 8px;
+  }
+  .badge-am { background: rgba(200,169,110,0.15); color: var(--gold); }
+  .badge-pm { background: rgba(100,120,200,0.15); color: #8899dd; }
+
+  .history-totals {
+    display: flex;
+    gap: 0;
+  }
+  .history-cat {
+    flex: 1;
+    padding: 10px 14px;
+    border-right: 1px solid var(--border);
+  }
+  .history-cat:last-child { border-right: none; }
+  .history-cat-name {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .history-cat-amount {
+    font-size: 15px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  .history-delete {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .delete-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .delete-btn:active { border-color: var(--red); color: var(--red); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--gold);
+    color: #0a0a0a;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  input[type=number] { -moz-appearance: textfield; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">Tip Out Tracker</div>
+  <div class="topbar-date" id="todayLabel"></div>
+</div>
+
+<div class="date-bar">
+  <label for="datePicker">Date</label>
+  <input type="date" id="datePicker"/>
+</div>
+
+<div class="shift-tabs">
+  <div class="shift-tab active" data-shift="AM" onclick="switchShift('AM')">☀ AM Shift</div>
+  <div class="shift-tab" data-shift="PM" onclick="switchShift('PM')">🌙 PM Shift</div>
+</div>
+
+<div class="content">
+
+  <!-- BAR TIP OUT -->
+  <div class="category" id="cat-bar">
+    <div class="category-header">
+      <span class="category-title">Bar Tip Out</span>
+      <span class="category-total" id="bar-total">$0.00</span>
+    </div>
+    <div class="slot-list" id="bar-slots"></div>
+    <div class="add-server-row">
+      <button class="add-server-btn" onclick="addServer('bar')">+ Add Server</button>
+    </div>
+  </div>
+
+  <!-- FOOD RUNNERS TIP OUT -->
+  <div class="category" id="cat-runner">
+    <div class="category-header">
+      <span class="category-title">Food Runners Tip Out</span>
+      <span class="category-total" id="runner-total">$0.00</span>
+    </div>
+    <div class="slot-list" id="runner-slots"></div>
+    <div class="add-server-row">
+      <button class="add-server-btn" onclick="addServer('runner')">+ Add Server</button>
+    </div>
+  </div>
+
+  <!-- BUSSER TIP OUT -->
+  <div class="category" id="cat-busser">
+    <div class="category-header">
+      <span class="category-title">Busser Tip Out</span>
+      <span class="category-total" id="busser-total">$0.00</span>
+    </div>
+    <div class="slot-list" id="busser-slots"></div>
+    <div class="add-server-row">
+      <button class="add-server-btn" onclick="addServer('busser')">+ Add Server</button>
+    </div>
+  </div>
+
+  <div class="save-row">
+    <button class="save-btn" onclick="saveShift()">Save Shift</button>
+  </div>
+
+  <div class="section-title">Saved History</div>
+  <div id="history-list"></div>
+
+</div>
+
+<div id="toast">Shift Saved!</div>
+
+<script>
+// ── STATE ──
+let currentShift = 'AM';
+let currentDate = '';
+
+// In-memory store: key = "YYYY-MM-DD|AM" or "YYYY-MM-DD|PM"
+// value = { bar: [{name,amount},...], runner: [...], busser: [...] }
+let savedShifts = {};
+
+// Current working data
+let workingData = {
+  bar: [],
+  runner: [],
+  busser: []
+};
+
+// ── INIT ──
+function init() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  currentDate = `${yyyy}-${mm}-${dd}`;
+  document.getElementById('datePicker').value = currentDate;
+
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('todayLabel').textContent = today.toLocaleDateString('en-US', opts).toUpperCase();
+
+  loadFromStorage();
+  loadWorkingData();
+  renderAll();
+  renderHistory();
+}
+
+// ── STORAGE ──
+function storageKey() { return `tiptrack_${currentDate}_${currentShift}`; }
+
+function saveToStorage() {
+  try { localStorage.setItem(storageKey(), JSON.stringify(workingData)); } catch(e) {}
+}
+
+function loadFromStorage() {
+  try {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith('tiptrack_'));
+    keys.forEach(k => {
+      try { savedShifts[k] = JSON.parse(localStorage.getItem(k)); } catch(e){}
+    });
+  } catch(e) {}
+}
+
+function loadWorkingData() {
+  const key = storageKey();
+  if (savedShifts[key]) {
+    workingData = JSON.parse(JSON.stringify(savedShifts[key]));
+  } else {
+    workingData = defaultData();
+  }
+}
+
+function defaultData() {
+  const isPM = currentShift === 'PM';
+  return {
+    bar: [
+      { id: uid(), name: '', amount: '', server: true }
+    ],
+    runner: [
+      { id: uid(), name: 'Host', amount: '', locked: true },
+      { id: uid(), name: 'Bar', amount: '', locked: true },
+      { id: uid(), name: '', amount: '', server: true },
+      ...(isPM ? [{ id: uid(), name: 'Online Takeout', amount: '', locked: true, pmOnly: true }] : [])
+    ],
+    busser: [
+      { id: uid(), name: '', amount: '', server: true }
+    ]
+  };
+}
+
+let _uidCounter = 0;
+function uid() { return 'id_' + Date.now() + '_' + (++_uidCounter); }
+
+// ── SWITCH ──
+function switchShift(shift) {
+  currentShift = shift;
+  document.querySelectorAll('.shift-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.shift === shift);
+  });
+  loadWorkingData();
+  renderAll();
+}
+
+document.getElementById('datePicker').addEventListener('change', function() {
+  currentDate = this.value;
+  loadWorkingData();
+  renderAll();
+  renderHistory();
+});
+
+// ── RENDER ──
+function renderAll() {
+  renderCategory('bar');
+  renderCategory('runner');
+  renderCategory('busser');
+}
+
+function renderCategory(cat) {
+  const list = document.getElementById(`${cat}-slots`);
+  list.innerHTML = '';
+  workingData[cat].forEach(slot => {
+    list.appendChild(makeSlotRow(cat, slot));
+  });
+  updateTotal(cat);
+}
+
+function makeSlotRow(cat, slot) {
+  const row = document.createElement('div');
+  row.className = 'slot-row';
+  row.dataset.id = slot.id;
+
+  if (slot.locked) {
+    // Locked name badge
+    const badge = document.createElement('span');
+    badge.className = 'slot-locked-badge';
+    badge.textContent = slot.name;
+    row.appendChild(badge);
+  } else {
+    // Editable name
+    const nameInput = document.createElement('input');
+    nameInput.className = 'slot-name';
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Server name';
+    nameInput.value = slot.name || '';
+    nameInput.addEventListener('input', e => { slot.name = e.target.value; });
+    row.appendChild(nameInput);
+  }
+
+  // Amount input
+  const dWrap = document.createElement('div');
+  dWrap.className = 'dollar-wrap';
+  const dSign = document.createElement('span');
+  dSign.className = 'dollar-sign';
+  dSign.textContent = '$';
+  const amtInput = document.createElement('input');
+  amtInput.className = 'slot-amount';
+  amtInput.type = 'number';
+  amtInput.min = '0';
+  amtInput.step = '0.01';
+  amtInput.placeholder = '0.00';
+  amtInput.inputMode = 'decimal';
+  amtInput.value = slot.amount || '';
+  amtInput.addEventListener('input', e => {
+    slot.amount = e.target.value;
+    updateTotal(cat);
+  });
+  dWrap.appendChild(dSign);
+  dWrap.appendChild(amtInput);
+  row.appendChild(dWrap);
+
+  // Remove button (only for non-locked server rows, not pmOnly)
+  if (!slot.locked) {
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'remove-btn';
+    rmBtn.textContent = '×';
+    rmBtn.addEventListener('click', () => {
+      workingData[cat] = workingData[cat].filter(s => s.id !== slot.id);
+      renderCategory(cat);
+    });
+    row.appendChild(rmBtn);
+  } else {
+    // Spacer to align
+    const spacer = document.createElement('span');
+    spacer.style.width = '22px';
+    row.appendChild(spacer);
+  }
+
+  return row;
+}
+
+function addServer(cat) {
+  const isPM = currentShift === 'PM';
+  // For runner, add before Online Takeout if PM
+  if (cat === 'runner' && isPM) {
+    const pmIdx = workingData.runner.findIndex(s => s.pmOnly);
+    const newSlot = { id: uid(), name: '', amount: '', server: true };
+    if (pmIdx > -1) {
+      workingData.runner.splice(pmIdx, 0, newSlot);
+    } else {
+      workingData.runner.push(newSlot);
+    }
+  } else {
+    workingData[cat].push({ id: uid(), name: '', amount: '', server: true });
+  }
+  renderCategory(cat);
+}
+
+function updateTotal(cat) {
+  const total = workingData[cat].reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+  document.getElementById(`${cat}-total`).textContent = fmt(total);
+}
+
+// ── SAVE ──
+function saveShift() {
+  const key = storageKey();
+  savedShifts[key] = JSON.parse(JSON.stringify(workingData));
+  try { localStorage.setItem(key, JSON.stringify(workingData)); } catch(e){}
+  showToast('Shift Saved!');
+  renderHistory();
+}
+
+// ── HISTORY ──
+function renderHistory() {
+  const container = document.getElementById('history-list');
+  container.innerHTML = '';
+
+  const entries = Object.entries(savedShifts)
+    .filter(([k]) => k.startsWith('tiptrack_'))
+    .map(([k, v]) => {
+      const parts = k.replace('tiptrack_','').split('_');
+      return { date: parts[0], shift: parts[1], data: v, key: k };
+    })
+    .sort((a,b) => {
+      if (b.date !== a.date) return b.date.localeCompare(a.date);
+      return a.shift === 'AM' ? -1 : 1;
+    });
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="history-empty">No saved shifts yet</div>';
+    return;
+  }
+
+  entries.forEach(entry => {
+    const barTotal = entry.data.bar.reduce((s,e) => s+(parseFloat(e.amount)||0),0);
+    const runnerTotal = entry.data.runner.reduce((s,e) => s+(parseFloat(e.amount)||0),0);
+    const busserTotal = entry.data.busser.reduce((s,e) => s+(parseFloat(e.amount)||0),0);
+
+    const el = document.createElement('div');
+    el.className = 'history-entry';
+
+    const dateObj = new Date(entry.date + 'T12:00:00');
+    const dateLabel = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+
+    el.innerHTML = `
+      <div class="history-header">
+        <span class="history-date-label">${dateLabel}
+          <span class="history-shift-badge ${entry.shift==='AM'?'badge-am':'badge-pm'}">${entry.shift}</span>
+        </span>
+      </div>
+      <div class="history-totals">
+        <div class="history-cat">
+          <div class="history-cat-name">Bar</div>
+          <div class="history-cat-amount">${fmt(barTotal)}</div>
+        </div>
+        <div class="history-cat">
+          <div class="history-cat-name">Runners</div>
+          <div class="history-cat-amount">${fmt(runnerTotal)}</div>
+        </div>
+        <div class="history-cat">
+          <div class="history-cat-name">Bussers</div>
+          <div class="history-cat-amount">${fmt(busserTotal)}</div>
+        </div>
+      </div>
+      <div class="history-delete">
+        <button class="delete-btn" data-key="${entry.key}">Delete</button>
+      </div>
+    `;
+
+    el.querySelector('.delete-btn').addEventListener('click', function() {
+      if (confirm('Delete this saved shift?')) {
+        delete savedShifts[this.dataset.key];
+        try { localStorage.removeItem(this.dataset.key); } catch(e){}
+        renderHistory();
+      }
+    });
+
+    container.appendChild(el);
+  });
+}
+
+// ── UTILS ──
+function fmt(val) {
+  return new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format(val);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
